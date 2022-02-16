@@ -38,5 +38,7 @@ plot(y);
 hold on;
 plot(y_hat);
 legend("Original","Encoded/Decoded")
+
+audiowrite('out.wav',y_hat,Fs);
 end
 
