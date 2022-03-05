@@ -1,6 +1,6 @@
 function y = lar(x)
 %LAR Conversion of reflection coeffients to approximated log-area ratios
-assert(x<=1);
+x=min(x,1); % enforce x<=1
 if x<0.675
     y=x;
 elseif x<0.95
