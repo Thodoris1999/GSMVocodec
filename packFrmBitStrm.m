@@ -1,4 +1,7 @@
-function FrmBitStrm = packFrmBitStrm(LARc,Nc,bc,CurrFrmExFull)
-FrmBitStrm = [LARc' Nc(1) bc(1) CurrFrmExFull(1:40) Nc(2) bc(2) CurrFrmExFull(41:80) Nc(3) bc(3) CurrFrmExFull(81:120) Nc(4) bc(4) CurrFrmExFull(121:160)];
+function FrmBitStrm = packFrmBitStrm(LARc,Nc,bc,Mall,xmaxcall,xMcall)
+FrmBitStrm = [LARc' Nc(1) bc(1) Mall(1) xmaxcall(1) xMcall(:,1)' ...
+    Nc(2) bc(2) Mall(2) xmaxcall(2) xMcall(:,2)' ...
+    Nc(3) bc(3) Mall(3) xmaxcall(3) xMcall(:,3)' ...
+    Nc(4) bc(4) Mall(4) xmaxcall(4) xMcall(:,4)'];
 end
 

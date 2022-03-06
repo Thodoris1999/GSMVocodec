@@ -7,17 +7,20 @@ if Fs~=8000
     Fs = 8000;
 end
 y=y';
+y=round(y*2^12); % Convert to 13-bit signed int as in standard
 frames = length(y)/frame_size;
+plot(y)
 
 y_hat = zeros(size(y)); % y after coding-decoding
-stream = zeros(length(frames), 176); % Allocate stream (176=length of encoded frame)
+STREAM_SIZE=76;
+stream = zeros(length(frames), STREAM_SIZE); % Allocate stream (76=length of encoded frame)
 
 % encode
 PrevFrmResd = zeros([1 frame_size]); % "initial" residue
 for i=1:frames
     frame = y(((i-1)*frame_size+1):(i*frame_size));
-    
     [FrmBitStrm,PrevFrmResd] = RPE_frame_coder(frame,PrevFrmResd);
+    
     stream(i,:) = FrmBitStrm;
 end
 
@@ -29,6 +32,8 @@ for i=1:frames
     
     y_hat(((i-1)*frame_size+1):(i*frame_size)) = frame_hat;
 end
+y_hat=y_hat/2^12; % Convert back to [-1,1]
+y=y/2^12; % Convert back to [-1,1]
 sound(y_hat,Fs);
 
 plot(y);
