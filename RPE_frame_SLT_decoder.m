@@ -1,4 +1,4 @@
-function [s0, CurrFrmSTResd] = RPE_frame_SLT_decoder(LARc,Nc,bc,Mall,xmaxcall,xMcall,PrevFrmSTResd)
+function [s0, CurrFrmSTResd] = RPE_frame_SLT_decoder(LARc,Nc,bc,Mall,xmaxcall,xMcall,PrevFrmSTResd,PrevLARc)
 %UNTITLED2 Summary of this function goes here
 %   CurrFrmExFull = e(n)
 %   PrevFrmSTResd = d'(n) (previous frame)
@@ -26,6 +26,6 @@ for j=0:3
     CurrFrmSTResd((j*40+1):(j*40+40)) = e_prime+d_double_prime;
 end
 
-s0 = RPE_frame_ST_decoder(LARc, CurrFrmSTResd);
+s0 = RPE_frame_ST_decoder(LARc,CurrFrmSTResd,PrevLARc);
 end
 

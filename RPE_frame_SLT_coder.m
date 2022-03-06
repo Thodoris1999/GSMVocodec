@@ -1,4 +1,4 @@
-function [LARc,Nc,bc,Mall,xmaxcall,xMcall,CurrFrmSTResd] = RPE_frame_SLT_coder(s0, PrevFrmSTResd)
+function [LARc,Nc,bc,Mall,xmaxcall,xMcall,CurrFrmSTResd] = RPE_frame_SLT_coder(s0,PrevFrmSTResd,PrevLARc)
 %UNTITLED Summary of this function goes here
 %   CurrFrmSTResd = d'(n)
 %   CurrFrmExFull = e(n) (no coding)
@@ -12,7 +12,7 @@ xMcall = zeros([13 4]);
 
 CurrFrmSTResd = zeros(size(s0));
 
-[LARc,short_term_d] = RPE_frame_ST_coder(s0); % short_term_d is d(n) from short term analysis
+[LARc,short_term_d] = RPE_frame_ST_coder(s0,PrevLARc); % short_term_d is d(n) from short term analysis
 
 for j=0:3
     d = short_term_d((j*40+1):(j*40+40)); % subframes

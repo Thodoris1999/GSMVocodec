@@ -16,19 +16,23 @@ STREAM_SIZE=76;
 stream = zeros(length(frames), STREAM_SIZE); % Allocate stream (76=length of encoded frame)
 
 % encode
-PrevFrmResd = zeros([1 frame_size]); % "initial" residue
+% "initial" values
+PrevFrmResd = zeros([1 frame_size]);
+PrevLARc = zeros([8 1]);
 for i=1:frames
     frame = y(((i-1)*frame_size+1):(i*frame_size));
-    [FrmBitStrm,PrevFrmResd] = RPE_frame_coder(frame,PrevFrmResd);
+    [FrmBitStrm,PrevFrmResd,PrevLARc] = RPE_frame_coder(frame,PrevFrmResd,PrevLARc);
     
     stream(i,:) = FrmBitStrm;
 end
 
 % decode
-PrevFrmSTResd = zeros([1 160]); % "initial" residue
+% "initial" values
+PrevFrmSTResd = zeros([1 160]);
+PrevLARc = zeros([8 1]);
 for i=1:frames
     FrmBitStrm = stream(i,:);
-    [frame_hat, PrevFrmSTResd] = RPE_frame_decoder(FrmBitStrm,PrevFrmSTResd);
+    [frame_hat,PrevFrmSTResd,PrevLARc] = RPE_frame_decoder(FrmBitStrm,PrevFrmSTResd,PrevLARc);
     
     y_hat(((i-1)*frame_size+1):(i*frame_size)) = frame_hat;
 end
