@@ -5,7 +5,10 @@ s = preproc(s0);
 % LPC analysis, order 8
 lpc_order = 8;
 acfc = acf(s,lpc_order);
-[~,~,k] = levinson(acfc,lpc_order); % k is the reflection coeffs
+R = toeplitz(acfc(1:lpc_order));
+r = acfc(2:end);
+a = linsolve(R,r);
+k = poly2rc([1; -a]);
 
 lars1 = arrayfun(@lar,k);
 quant_a = [20 20 20 20 13.637 15 8.334 8.824]';
@@ -16,6 +19,6 @@ LARc = round(quant_a.*lars1+quant_b);
 lars = (LARc-quant_b)./quant_a;
 k = arrayfun(@lar_inv, lars);
 a = rc2poly(k);
-CurrFrmSTResd = filter([1 -a], 1, s);
+CurrFrmSTResd = filter(a, 1, s);
 end
 

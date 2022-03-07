@@ -29,9 +29,6 @@ for i=1:frames
     
     y_hat(((i-1)*frame_size+1):(i*frame_size)) = frame_hat;
 end
-% clip between [-1,1]
-y_hat = min(y_hat,1);
-y_hat = max(y_hat,-1);
 
 sound(y_hat,Fs);
 
