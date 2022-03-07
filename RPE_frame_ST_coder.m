@@ -5,7 +5,10 @@ s = preproc(s0);
 % LPC analysis, order 8
 lpc_order = 8;
 acfc = acf(s,lpc_order);
-[~,~,k] = levinson(acfc,lpc_order); % k is the reflection coeffs
+R = toeplitz(acfc(1:lpc_order));
+r = acfc(2:end);
+a = linsolve(R,r);
+k = poly2rc([1; -a]);
 
 lars1 = arrayfun(@lar,k);
 LARc = quantize_lars(lars1);
