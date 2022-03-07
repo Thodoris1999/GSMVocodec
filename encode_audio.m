@@ -10,7 +10,7 @@ y=y';
 frames = length(y)/frame_size;
 
 y_hat = zeros(size(y)); % y after coding-decoding
-stream = zeros(length(frames), 176); % Allocate stream (176=length of encoded frame)
+stream = zeros(length(frames), 168); % Allocate stream (176=length of encoded frame)
 
 % encode
 PrevFrmResd = zeros([1 frame_size]); % "initial" residue
