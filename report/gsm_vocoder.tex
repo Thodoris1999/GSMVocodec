@@ -23,7 +23,7 @@
 \maketitle
 
 \section{Introduction}
-This document provides some general guidance for the codec's source code. My goal in this assignment was to follow the specification up to \textbf{\textgreek{Παραδοτέο Επιπέδου 3}} as closely as possible, using simple and readable code. Towards the end of the report, I also discuss alternate implementations to potentially improve the audio quality. The source code is hosted on GitHub at \url{https://github.com/Thodoris1999/GSMVocodec}.
+This document provides some general guidance for the codec's source code. My goal in this assignment was to follow the specification up to \textbf{\textgreek{Παραδοτέο Επιπέδου 3}} as closely as possible, using simple and readable code. The source code for this assignment is hosted on GitHub at \url{https://github.com/Thodoris1999/GSMVocodec}.
 
 \section{Source code description}
 The source code contains the following utility functions.
@@ -44,7 +44,7 @@ The source code contains the following utility functions.
 
 The rest of the functions, \textbf{RPE\_frame\_coder}, \textbf{RPE\_frame\_decoder}, \\ \textbf{RPE\_frame\_ST\_coder}, \textbf{RPE\_frame\_ST\_decoder}, \textbf{RPE\_frame\_SLT\_coder}, \textbf{RPE\_frame\_SLT\_decoder} are implemented as described in the assignment description.
 
-The main function to test the codec is the \textbf{encode\_audio(file)} function. It takes an audio file as an argument and plays its audio after it has been coded and decoded. In the project folder, there is already a speech sample, so the project can be tested by running.
+The main function to test the codec is the \textbf{encode\_audio(file)} function. It takes an audio file as an argument and plays its audio after it has been coded and decoded, plots the samples before and after, and writes the output audio to \textbf{out.wav}. In the project folder, there is already a speech sample, so the project can be tested by running.
 
 \begin{center}
 	\texttt{encode\_wav('OSR\_us\_000\_0010\_8k.wav')}
@@ -53,15 +53,14 @@ The main function to test the codec is the \textbf{encode\_audio(file)} function
 \noindent or just \textbf{demo} on the MATLAB interpreter.
 
 \section{Implementation notes}
-The project repository has 3 branches. The main branch contains the 3rd level assignment which follows the implementation specified in the standard as closely as possible, including the interpolation of log-area ratios. The level3\_bwe branch targets the 3rd level as well, but uses bandwidth expansion. The stage2 branch can be used to verify that the first two levels are working correctly.
+The project repository has 4 branches. The main branch contains the 3rd level assignment which follows the implementation specified in the standard as closely as possible, including the interpolation of log-area ratios. The level3\_no\_lar\_interp branch targets the 3rd level as well, but does not interpolate the log-area ratios. The stage2 and stage2 branches isolate the assignment levels 1 and 2 respectively, and can be used to verify that the first two levels are working correctly and their coding quality.
 
-Initially, I attempted to follow the specification on the assignment description as closely as possible. However, without any modifications, occasional high frequency crackling noise could be heard in any speech sample I tried. After analyzing, I found out that this happened due to sudden spikes towards the end of frames in which the transfer function of the short term synthesis filter was unstable (or had poles outside the unit circle). Theoretically, this is still not an issue when applying the synthesis filter on the original residuals, but small errors due to floating point operation precision and quantization can produce divergent behavior\footnote{\url{https://www.vocal.com/speech-coders/stability-of-lpc-filters/}}.
+Both level3 branches are nicely intelligible when using speech samples, even though it is easily identifiable that they are different from the original (unlike the first 2 assignment levels). I implemented the log-area ratio interpolation expecting to get even clearer results, but hardly any difference can be noticed. As mentioned in the introduction, I wanted to follow the specification very closely, so I considered any further modifications "cheating", but some of the mid-high frequency buzzing can potentially be reduced with a low pass filter at the decoder or a more aggressive RPE weighting filter.
 
-It turned out that it was important for that matter to interpolate the log-area ratios. After doing this, the entire frame is not fed to the same filter and therefore in practice never escalated to divergence, fixing the crackling issue completely. To implement this however, I needed to slightly change the function signatures of the spec in the assignment description to include the previous log-area ratios.
+The implementation in the stage2 branch contains only the first two levels, so no coding/quantization of the long term analysis residuals (RPE parameters) is applied. This produces results identical to the original audibly (to my ear at least), which makes sense since we are using exactly the original residuals which were obtained using the same quantized-dequantized parameters. The majority of the compression occurs on the residuals (instead of 160 floats we only use 188 bits in each frame for the RPE parameters!). The stage1 branch, which only uses short term prediction is even closer to other original, with barely any divergence from it even when zooming to the output signal plot very closely. Again, this happens because we are using the original uncompressed short term residuals.
 
-Another commonly used\footnote{\url{https://patents.google.com/patent/WO2001003124A1/ru}} way to fix the synthesis instability, was to introduce Bandwidth expansion\cite{50066} on the decoder's synthesis filter. Of course, this distorts the decoded signal slightly, as the synthesis filter is not exactly inverse of the analysis filter, but it is not that noticeable. It also does not make the codec depend on the previous log-area ratios, allowing me to follow exactly the function spec of the assignment description. In my opinion, this also sounds a bit more clear than the LAR interpolation approach.
-
-The implementation in the stage2 branch contains only the first two levels, so no coding/quantization of the long term analysis residuals is applied. This produces results almost identical to the original audibly, which makes sense since only the LARs and the LTP gain are compressed while the residuals remain equal to the original and the majority of the compression occurs on the residuals (instead of 160 floats we only use 188 bits in each frame for the RPE parameters!). Bandwidth expansion can be optionally enabled by uncommenting it from \texttt{RPE\_frame\_ST\_decoder.m}, but the high frequency spikes are not as prevalent since we are using the original LTP residuals. Since both the first and secod level assignments need to be working correctly, this branch can be used to test them.
+\section{Conclusion}
+Overall this was an interesting assignment that produced a very efficient but still easily intelligible vocal codec. It can be used to transmit 100\% of the verbal information, while only using $260/160=1.625$ bits per sample from the original 13 bits.
 
 \printbibliography
 \end{document}          
